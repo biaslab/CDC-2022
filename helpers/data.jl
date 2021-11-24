@@ -4,7 +4,7 @@ sigmoid(x) = 1 / (1 + exp(x))
 
 function narx(y, u, h)
     y_ = y .^ 3
-    u_ = 3 .* sin.(u)
+    u_ = u
     h_ = h
     z_ = mapreduce(x -> sum(x), +, [y_, u_, h_])
     z = mod(z_, 1)
