@@ -50,6 +50,12 @@ git-tree-sha1 = "19a35467a82e236ff51bc17a3a44b69ef35185a2"
 uuid = "6e34b625-4abd-537c-b88f-471c36dfa7a0"
 version = "1.0.8+0"
 
+[[CMAEvolutionStrategy]]
+deps = ["Dates", "LinearAlgebra", "Printf", "Random", "Statistics"]
+git-tree-sha1 = "142f9745ac11958533956613330ff63e4850a7e6"
+uuid = "8d3b24bd-414e-49e0-94fb-163cc3a3e411"
+version = "0.2.2"
+
 [[CPUTime]]
 git-tree-sha1 = "2dcc50ea6a0a1ef6440d6eecd0fe3813e5671f45"
 uuid = "a9c8d775-2e2e-55fc-8582-045d282d599e"
