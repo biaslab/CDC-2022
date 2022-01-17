@@ -19,8 +19,8 @@ load('test_data.mat')
 numResponses = 1;
 featureDimension = 1;
 numHiddenUnits = 100;
-maxEpochs = 1000;
-miniBatchSize = 200;
+maxEpochs = 500;
+miniBatchSize = 10;
 Networklayers = [sequenceInputLayer(featureDimension) ...
     lstmLayer(numHiddenUnits) ...
     fullyConnectedLayer(numResponses) ...
@@ -42,11 +42,11 @@ options = trainingOptions('adam', ...
 poolobj = parpool;
 fullNet = trainNetwork(input_train', output_train', Networklayers, options);
 delete(poolobj)
-save('fullNet');
 
 % Validate performance
 predictions = predict(fullNet, input_test');
 MSE = mean((output_test' - predictions).^2)
+save('LSTMnet.mat', 'fullNet', 'predictions', 'MSE');
 
 % Plot results
 figure; hold on
