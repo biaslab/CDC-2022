@@ -5,6 +5,7 @@ mutable struct GalacticCallback
 end
 
 function (callback::GalacticCallback)(args...)
-    ProgressMeter.next!(callback.p)
+    Core.println(args[2])
+#     ProgressMeter.next!(callback.p)
     return false
 end
