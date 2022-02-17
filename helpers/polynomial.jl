@@ -64,6 +64,43 @@ function gen_combs(options)
     return combs
 end
 
+function precompiled_phi(options=Dict("na"=>0, "nb"=>0, "ne"=>0, "nd"=>1, "dc"=>false, "crossTerms"=>true, "noiseCrossTerms"=>false))
+    # Generate array of combinations
+    return let P = gen_combs(options)
+        (x) -> begin 
+            # Input dimensionality
+            N = length(x)
+
+            # Check whether [na, nb, ne] matches vector dimensionality
+            if size(P,1) != N; error("Generating polynomial combinations failed. Dimensionality of data vector does not match na+nb+ne+1."); end
+
+            # Output dimensionality
+            M = size(P,2)
+
+            # Preallocate output vector
+            y = zeros(M)
+
+            # Iterate over combinations
+            for m = 1:M
+
+                # Temporary array
+                T = zeros(N)
+
+                # Iterate over elements of vector
+                for n = 1:N
+
+                    # Raise each element of x to a certain power
+                    T[n] = x[n].^P[n,m]
+                end
+
+                # Add product of elements raised to powers
+                y[m] = prod(T)
+            end
+            return y
+        end
+    end
+end
+
 function ϕ(x::Vector{Float64}, options=Dict("na"=>0, "nb"=>0, "ne"=>0, "nd"=>1, "dc"=>false, "crossTerms"=>true, "noiseCrossTerms"=>false))
     """
     Explanation of options:
