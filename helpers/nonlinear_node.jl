@@ -20,26 +20,24 @@ end
 end
 
 # Rule for outbound message on `in` edge given inbound message on `out` edge
-@rule NonlinearNode(:in, Marginalisation) (m_out::NormalDistributionsFamily, m_in::NormalDistributionsFamily, meta::NonlinearMeta) = begin 
+@rule NonlinearNode(:in, Marginalisation) (m_out::NormalDistributionsFamily, m_in::NormalDistributionsFamily, meta::NonlinearMeta) = begin
     def_fn(s) = meta.fn(meta.ysprev, meta.us, s)
     log_m_(x) = logpdf(m_out, def_fn(x))
     rng = MersenneTwister(meta.seed)
     samples = [rand(rng, m_in) for _ in 1:meta.nsamples]
     weights = log_m_.(samples)
     # weights = map(log_m_, samples)
-    min_val = min(weights...)
-    # min_val = minimum(weights)
-    
-    log_norm = min_val + log(sum(exp.(weights .- min_val)))  
-    # log_norm = min_val + log(mapreduce(w -> exp(w - min_val), +, weights))
-    
+    max_val = max(weights...)
+
+    log_norm = max_val + log(sum(exp.(weights .- max_val)))  
+
     weights = exp.(weights .- log_norm)
     # map!(w -> exp(w - log_norm), weights, weights)
-    
+
     μ = sum(weights.*samples)
     # μ = mapreduce(d -> d[1] * d[2], +, zip(weights, samples))
     # tmp = similar(μ)
-    
+
     tot = zeros(length(samples[1]), length(samples[1]))
     for i = 1:meta.nsamples
         # map!(-, tmp, samples[i], μ)
@@ -52,7 +50,7 @@ end
     return MvNormalWeightedMeanPrecision(prec_mu, prec)
 end
 
-@marginalrule NonlinearNode(:in) (m_out::MvNormalWeightedMeanPrecision, m_in::MvNormalWeightedMeanPrecision, meta::NonlinearMeta) = begin 
+@marginalrule NonlinearNode(:in) (m_out::MvNormalWeightedMeanPrecision, m_in::MvNormalWeightedMeanPrecision, meta::NonlinearMeta) = begin
     m_in_ = @call_rule NonlinearNode(:in, Marginalisation) (m_out=m_out, m_in=m_in, meta=meta)
     return prod(ProdAnalytical(), m_in, m_in_)
 end
@@ -64,6 +62,6 @@ end
 
 Distributions.entropy(dist::DummyDistribution) = ReactiveMP.InfCountingReal(0.0, -1)
 
-@marginalrule typeof(+)(:in1_in2) (m_out::PointMass, m_in1::NormalDistributionsFamily, m_in2::NormalDistributionsFamily, ) = begin 
+@marginalrule typeof(+)(:in1_in2) (m_out::PointMass, m_in1::NormalDistributionsFamily, m_in2::NormalDistributionsFamily, ) = begin
     return DummyDistribution()
 end
