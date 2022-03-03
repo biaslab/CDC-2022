@@ -53,25 +53,25 @@ end
     return MvNormalWeightedMeanPrecision(prec_mu, prec)
 end
 
-# Laplace Approximation
-@rule NonlinearNode(:in, Marginalisation) (m_out::NormalDistributionsFamily, m_in::NormalDistributionsFamily, meta::NonlinearMeta) = begin
-    def_fn(s) = meta.fn(meta.ysprev, meta.us, s)
-    log_m_(x) = logpdf(m_out, def_fn(x))
+# # Laplace Approximation
+# @rule NonlinearNode(:in, Marginalisation) (m_out::NormalDistributionsFamily, m_in::NormalDistributionsFamily, meta::NonlinearMeta) = begin
+#     def_fn(s) = meta.fn(meta.ysprev, meta.us, s)
+#     log_m_(x) = logpdf(m_out, def_fn(x))
 
-    # Optimize with gradient ascent
-    log_joint(x) = logpdf(m_out, def_fn(x)) + logpdf(m_in, x)
-    neg_log_joint(x) = -log_joint(x)
-    d_log_joint(x) = ForwardDiff.gradient(log_joint, x)
-    m_initial = mean(m_in)
+#     # Optimize with gradient ascent
+#     log_joint(x) = logpdf(m_out, def_fn(x)) + logpdf(m_in, x)
+#     neg_log_joint(x) = -log_joint(x)
+#     d_log_joint(x) = ForwardDiff.gradient(log_joint, x)
+#     m_initial = mean(m_in)
 
-    #mean = gradientOptimization(log_joint, d_log_joint, m_initial, 0.01)
-    μ = optimize(neg_log_joint, m_initial, LBFGS(); autodiff = :forward).minimizer
-    W = -ForwardDiff.jacobian(d_log_joint, μ)
+#     #mean = gradientOptimization(log_joint, d_log_joint, m_initial, 0.01)
+#     μ = optimize(neg_log_joint, m_initial, LBFGS(); autodiff = :forward).minimizer
+#     W = -ForwardDiff.jacobian(d_log_joint, μ)
 
-    prec = W - precision(m_in)
-    prec_mu = W*μ - weightedmean(m_in)
-    return MvNormalWeightedMeanPrecision(prec_mu, prec)
-end
+#     prec = W - precision(m_in)
+#     prec_mu = W*μ - weightedmean(m_in)
+#     return MvNormalWeightedMeanPrecision(prec_mu, prec)
+# end
 
 @marginalrule NonlinearNode(:in) (m_out::MvNormalWeightedMeanPrecision, m_in::MvNormalWeightedMeanPrecision, meta::NonlinearMeta) = begin
     m_in_ = @call_rule NonlinearNode(:in, Marginalisation) (m_out=m_out, m_in=m_in, meta=meta)
