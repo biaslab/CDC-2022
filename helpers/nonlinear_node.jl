@@ -66,7 +66,7 @@ end
 
     #mean = gradientOptimization(log_joint, d_log_joint, m_initial, 0.01)
     μ = optimize(neg_log_joint, m_initial, LBFGS(); autodiff = :forward).minimizer
-    W = -ForwardDiff.jacobian(d_log_joint, mean)
+    W = -ForwardDiff.jacobian(d_log_joint, μ)
 
     prec = W - precision(m_in)
     prec_mu = W*μ - weightedmean(m_in)

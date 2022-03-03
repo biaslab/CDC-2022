@@ -78,13 +78,13 @@ function precompiled_phi(options=Dict("na"=>0, "nb"=>0, "ne"=>0, "nd"=>1, "dc"=>
             M = size(P,2)
 
             # Preallocate output vector
-            y = zeros(M)
+            y = zeros(eltype(x), M)
 
             # Iterate over combinations
             for m = 1:M
 
                 # Temporary array
-                T = zeros(N)
+                T = zeros(eltype(x), N)
 
                 # Iterate over elements of vector
                 for n = 1:N
