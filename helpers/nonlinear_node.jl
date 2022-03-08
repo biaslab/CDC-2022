@@ -73,6 +73,34 @@ end
     return MvNormalWeightedMeanPrecision(prec_mu, prec)
 end
 
+# EKF forward
+@rule NonlinearNode(:out, Marginalisation) (m_in::NormalDistributionsFamily, meta::NonlinearMeta) = begin
+    def_fn(s) = meta.fn(meta.ysprev, meta.us, s)
+    m_ = mean(m_in)
+    P_ = cov(m_in)
+    m = def_fn(m_)
+    H = ForwardDiff.gradient(def_fn, m_)
+    P = H*P_*transpose(H)
+    return MvNormalMeanCovariance(m, P)
+end
+
+# EKF backward
+@rule NonlinearNode(:in, Marginalisation) (m_out::NormalDistributionsFamily, m_in::NormalDistributionsFamily, meta::NonlinearMeta) = begin
+    def_fn(s) = meta.fn(meta.ysprev, meta.us, s)
+    m_ = mean(m_in)
+    P_ = cov(m_in)
+    H = ForwardDiff.gradient(def_fn, m_)
+    y = mean(m_out)
+    R = cov(m_out)
+    v = y - def_fn(m_)
+    S = H*P_*transpose(H) + R
+    K = P_*transpose(H)*inv(S)
+    m = m_ + K*v
+    P = P_ - K*S*transpose(K)
+
+    return MvNormalMeanCovariance(m, P)
+end
+
 @marginalrule NonlinearNode(:in) (m_out::MvNormalWeightedMeanPrecision, m_in::MvNormalWeightedMeanPrecision, meta::NonlinearMeta) = begin
     m_in_ = @call_rule NonlinearNode(:in, Marginalisation) (m_out=m_out, m_in=m_in, meta=meta)
     return prod(ProdAnalytical(), m_in, m_in_)
