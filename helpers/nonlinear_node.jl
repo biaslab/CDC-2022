@@ -79,7 +79,7 @@ end
     m_ = mean(m_in)
     P_ = cov(m_in)
     m = def_fn(m_)
-    H = ForwardDiff.gradient(def_fn, m_)
+    H = ForwardDiff.jacobian(def_fn, m_)
     P = H*P_*transpose(H)
     return MvNormalMeanCovariance(m, P)
 end
@@ -89,7 +89,7 @@ end
     def_fn(s) = meta.fn(meta.ysprev, meta.us, s)
     m_ = mean(m_in)
     P_ = cov(m_in)
-    H = ForwardDiff.gradient(def_fn, m_)
+    H = ForwardDiff.jacobian(def_fn, m_)
     y = mean(m_out)
     R = cov(m_out)
     v = y - def_fn(m_)
@@ -98,7 +98,9 @@ end
     m = m_ + K*v
     P = P_ - K*S*transpose(K)
 
-    return MvNormalMeanCovariance(m, P)
+    prec = inv(P) - precision(m_in)
+    prec_mu = inv(P)*m - weightedmean(m_in)
+    return MvNormalWeightedMeanPrecision(prec_mu, prec)
 end
 
 @marginalrule NonlinearNode(:in) (m_out::MvNormalWeightedMeanPrecision, m_in::MvNormalWeightedMeanPrecision, meta::NonlinearMeta) = begin
