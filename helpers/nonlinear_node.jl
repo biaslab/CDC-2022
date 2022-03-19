@@ -82,7 +82,7 @@ end
 
 # EKF forward
 @rule NonlinearNode(:out, Marginalisation) (m_in::NormalDistributionsFamily, meta::NonlinearMeta) = begin
-    def_fn(s) = meta.fn(meta.ysprev, meta.us, s)
+    def_fn(s) = meta.fn(meta.us, meta.ysprev, s)
     m_ = mean(m_in)
     P_ = cov(m_in)
     m = def_fn(m_)
@@ -93,7 +93,7 @@ end
 
 # EKF backward
 @rule NonlinearNode(:in, Marginalisation) (m_out::NormalDistributionsFamily, m_in::NormalDistributionsFamily, meta::NonlinearMeta) = begin
-    def_fn(s) = meta.fn(meta.ysprev, meta.us, s)
+    def_fn(s) = meta.fn(meta.us, meta.ysprev, s)
     m_ = mean(m_in)
     P_ = cov(m_in)
     H = ForwardDiff.jacobian(def_fn, m_)
