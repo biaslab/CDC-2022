@@ -1,4 +1,4 @@
-using LinearAlgebra
+export gen_combs, precompiled_phi, ϕ
 
 function gen_combs(options)
 

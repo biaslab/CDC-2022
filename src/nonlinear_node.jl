@@ -1,5 +1,4 @@
-using Optim: optimize, LBFGS
-using ForwardDiff
+export NonlinearNode, NonlinearMeta
 
 struct NonlinearNode end # Dummy structure just to make Julia happy
 
