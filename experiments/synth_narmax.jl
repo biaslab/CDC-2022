@@ -22,7 +22,7 @@ experiments = dict_list(Dict(
     "delay"      => collect(1:4),
     "poly_order" => collect(2:3),
     "iterations" => 100,
-    "w_true"     => [1e1, 1e2, 1e3, 1e4, 2e4],
+    "w_true"     => [1e2, 1e3, 1e4, 2e4],
     "seed"       => 42
 ))
 
@@ -186,9 +186,6 @@ results = map(experiments) do experiment
     cache_path  = projectdir("dump", "narmax")
     # Types which should be used for cache file name
     save_types  = (String, Real)
-    result, _ = produce_or_load(cache_path, experiment, allowedtypes = save_types) do params
-        run_experiment(params)
-    end
     try
         result, _ = produce_or_load(cache_path, experiment, allowedtypes = save_types) do params
             run_experiment(params)
