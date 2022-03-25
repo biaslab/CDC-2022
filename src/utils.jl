@@ -5,7 +5,7 @@ export transition, shift, prediction, inference_callback, narmax_meta
     AR(ẑ, η, τ) -> ARMeta(artype, order_2, stype)
 end
 
-@marginalrule NonlinearNode(:in) (m_out::MvNormalWeightedMeanPrecision, m_in::MvNormalWeightedMeanPrecision, meta::NonlinearMeta) = begin
+@marginalrule NonlinearNode(:in) (m_out::MultivariateNormalDistributionsFamily, m_in::MultivariateNormalDistributionsFamily, meta::NonlinearMeta) = begin
     m_in_ = @call_rule NonlinearNode(:in, Marginalisation) (m_out=m_out, m_in=m_in, meta=meta)
     return prod(ProdAnalytical(), m_in, m_in_)
 end
