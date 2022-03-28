@@ -13,5 +13,6 @@ include("nonlinear_node.jl")
 include("polynomial.jl")
 include("utils.jl")
 include("models.jl")
+include("NARMAX_fl.jl")
 
 end
