@@ -8,6 +8,7 @@ using Random
 using Plots
 using LinearAlgebra
 using StatsBase
+using DataStructures
 import ProgressMeter
 
 pgfplotsx()
@@ -207,3 +208,64 @@ results = map(experiments) do experiment
         @warn error
     end
 end
+
+
+
+
+### agile
+true_ws = [1e1, 1e2, 1e3, 1e4]
+rmses  = [[], [], [], []]
+RMSE_UT = SortedDict(true_ws .=> deepcopy.(rmses))
+RMSE_ET = SortedDict(true_ws .=> deepcopy.(rmses))
+RMSE_ACC = SortedDict(true_ws .=> deepcopy.(rmses))
+
+for i in 1:length(results)
+    try
+        if typeof(results[i]["experiment_params"]["approximation"]) == UT
+            ws = results[i]["experiment_params"]["w_true"]
+            push!(RMSE_UT[ws], results[i]["RMSE_sim"])
+        end
+    catch error
+        @warn error
+    end
+
+    try
+        if typeof(results[i]["experiment_params"]["approximation"]) == ET
+            ws = results[i]["experiment_params"]["w_true"]
+            push!(RMSE_ET[ws], results[i]["RMSE_sim"])
+        end
+    catch error
+        @warn error
+    end
+
+    try
+        if typeof(results[i]["experiment_params"]["approximation"]) == UT
+            ws = results[i]["experiment_params"]["w_true"]
+            push!(RMSE_ACC[ws], results[i]["rms_sim_fl"])
+        end
+    catch error
+        @warn error
+    end
+    
+end
+
+function mean_cov_rmse(sdict)
+    map(collect(sdict)) do pair 
+        key = pair[1]
+        vals = pair[2]
+    
+        filter!(!isnan, vals)
+        return key => (mean(vals), std(vals))
+    end |> SortedDict
+end
+
+rmse_acc = mean_cov_rmse(RMSE_ACC)
+rmse_ut = mean_cov_rmse(RMSE_UT)
+rmse_et = mean_cov_rmse(RMSE_ET)
+
+gr()
+plot(collect(keys(rmse_acc)), first.(collect(values(rmse_acc))), ribbon=sqrt.(last.(collect(values(rmse_acc)))), label="ACC")
+plot!(collect(keys(rmse_ut)), first.(collect(values(rmse_ut))), ribbon=sqrt.(last.(collect(values(rmse_ut)))), label="UT", xlabel="noise precision", ylabel="RMSE")
+
+plot(collect(keys(rmse_acc)), first.(collect(values(rmse_acc))), ribbon=sqrt.(last.(collect(values(rmse_acc)))), label="ACC")
+plot!(collect(keys(rmse_et)), first.(collect(values(rmse_et))), ribbon=sqrt.(last.(collect(values(rmse_et)))), label="ET", xlabel="noise precision", ylabel="RMSE")
