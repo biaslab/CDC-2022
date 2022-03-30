@@ -79,7 +79,32 @@ export narmax, narmax_mini
 end
 
 # Nonlinear MAX model definition
+# @model function narmax_mini(h_prior, w_prior, η_prior, τ_prior, y_prev, u, delay_e, order)
+        
+#     S = shift(delay_e); c = zeros(delay_e); c[1] = 1.0;
+#     h = randomvar()
+#     # initialize variables
+#     y  = datavar(Float64)
+#     # priors
+#     w  ~ GammaShapeRate(shape(w_prior), rate(w_prior))
+#     η  ~ MvNormalMeanPrecision(mean(η_prior), precision(η_prior))
+#     τ  ~ GammaShapeRate(shape(τ_prior), rate(τ_prior))
+#     # initial
+#     h_0  ~ MvNormalMeanPrecision(mean(h_prior), precision(h_prior))
+#     z ~ NonlinearNode(h_0) where {pipeline=RequireInbound(in=MvNormalMeanPrecision(zeros(delay_e), diageye(delay_e))), meta = NonlinearMeta(ET(), phi_, y_prev, u)}
+#     ẑ ~ AR(z, η, τ)
+#     e ~ NormalMeanPrecision(0.0, w)
+#     b = zeros(order); b[1] = 1.0;
+#     y ~ dot(b, ẑ) + e
+#     h ~ S*h_0 + c*e
+#     h ~ MvNormalMeanPrecision(zeros(delay_e), diageye(delay_e))
+
+#     return
+# end
+
 @model function narmax_mini(h_prior, w_prior, η_prior, τ_prior, y_prev, u, delay_e, order, ϕ, approximation)
+    S = shift(delay_e); c = zeros(delay_e); c[1] = 1.0;
+    h = randomvar()
         
     # initialize variables
     y  = datavar(Float64)
@@ -94,6 +119,9 @@ end
     e ~ NormalMeanPrecision(0.0, w)
     b = zeros(order); b[1] = 1.0;
     y ~ dot(b, ẑ) + e
+
+    h ~ S*h_0 + c*e
+    h ~ MvNormalMeanPrecision(zeros(delay_e), diageye(delay_e))
 
     return
 end

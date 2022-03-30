@@ -22,7 +22,7 @@ end
     AR(ẑ, η, τ) -> ARMeta(artype, order, stype)
 end
 
-function prediction(h_prior, w_mle, η_posterior, τ_posterior, y_prev, u; full_order, meta)
+function prediction(h_prior, w_mle, η_posterior, τ_posterior; full_order, meta)
     h_out = MvNormalMeanPrecision(mean(h_prior), precision(h_prior))
     ϕ_out = @call_rule NonlinearNode(:out, Marginalisation) (m_in=h_out, meta=meta)
     ar_out = @call_rule AR(:y, Marginalisation) (m_x=ϕ_out, q_θ=η_posterior, q_γ=τ_posterior, meta=ARMeta(Multivariate, full_order, ARsafe()))
@@ -39,7 +39,7 @@ function inference_callback(h_prior, η_prior, τ_prior, w_prior, Y, X, U, delay
     narmax_mini_model = Model(narmax_mini, h_prior, w_prior, η_prior, τ_prior, X, U, delay_e, full_order, ϕ, approximation)
 
     mini_constraints = @constraints begin
-        q(ẑ, z, η, τ, e, w, h_0) = q(ẑ, z, h_0)q(η)q(τ)q(e)q(w)
+        q(ẑ, z, η, τ, e, w, h_0, h) = q(ẑ, z, h_0, h)q(η)q(τ)q(e)q(w)
     end;
 
     mini_imarginals = (h_0 = h_prior,
@@ -47,19 +47,22 @@ function inference_callback(h_prior, η_prior, τ_prior, w_prior, Y, X, U, delay
                        τ = τ_prior,
                        η = η_prior);
 
+    mini_imessages = (e = NormalMeanPrecision(0.0, 1.0), );
+
     mini_result = inference(
                     model = narmax_mini_model, 
                     data  = (y = Y, ),
                     constraints   = mini_constraints,
                     meta          = narmax_meta(Multivariate, full_order, ARsafe()),
-                    initmarginals = mini_imarginals, 
-                    returnvars    = (w=KeepLast(), e=KeepLast(), η=KeepLast(), τ=KeepLast(), z=KeepLast(), ẑ=KeepLast(), h_0=KeepLast()),
+                    initmarginals = mini_imarginals,
+                    initmessages  = mini_imessages,
+                    returnvars    = (w=KeepLast(), e=KeepLast(), η=KeepLast(), τ=KeepLast(), z=KeepLast(), ẑ=KeepLast(), h_0=KeepLast(), h=KeepLast()),
                     free_energy   = true,
                     iterations    = 10, 
                     showprogress  = true
                 );
-    @unpack w, e, η, τ, z, ẑ, h_0 = mini_result.posteriors
-    w.data, e.data, η.data, τ.data
+    @unpack w, e, η, τ, z, ẑ, h_0, h = mini_result.posteriors
+    w.data, e.data, η.data, τ.data, h.data
 end
 
 

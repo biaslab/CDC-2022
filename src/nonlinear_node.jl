@@ -201,9 +201,17 @@ end
 
 
 @rule NonlinearNode(:out, Marginalisation) (m_in::NormalDistributionsFamily, meta::NonlinearMeta{UT}) = begin
-    def_fn(s) = meta.fn(meta.us, meta.ysprev, s)
+    s_len = length(mean(m_in))
     (m_fw_in1, V_fw_in1) = mean_cov(m_in)
-    (m_tilde, V_tilde, _) = unscentedStatistics(m_fw_in1, V_fw_in1, def_fn; alpha=default_alpha)
+    m_xys = [meta.us; meta.ysprev; m_fw_in1]
+    
+    def_fn(x) = meta.fn(x[1:length(meta.us)], x[length(meta.us)+1:length(meta.us)+length(meta.ysprev)], x[length(meta.us)+length(meta.ysprev)+1:length(meta.us)+length(meta.ysprev)+s_len]) 
+#     def_fn(u, y, s) = meta.fn(u, y, s)  
+    Vxys = diageye(length(m_xys))*1e-4
+        
+        Vxys[end-s_len+1:end,end-s_len+1:end] = V_fw_in1
+#     def_fn(s) = meta.fn(meta.us, meta.ysprev, s)
+    (m_tilde, V_tilde, _) = unscentedStatistics(m_xys, Vxys, def_fn; alpha=default_alpha)
     return MvNormalMeanCovariance(m_tilde,V_tilde)
 end
 
@@ -218,3 +226,21 @@ end
     (m_bw_in1, V_bw_in1) = smoothRTSMessage(m_tilde, V_tilde, C_tilde, m_fw_in1, V_fw_in1, m_bw_out, V_bw_out)
     return MvNormalMeanCovariance(m_bw_in1, V_bw_in1)
 end
+
+    
+# @rule NonlinearNode(:in, Marginalisation) (m_out::NormalDistributionsFamily, m_in::NormalDistributionsFamily, meta::NonlinearMeta{UT}) = begin
+        
+#     s_len = length(mean(m_in))
+#     (m_fw_in1, V_fw_in1) = mean_cov(m_in)
+#     m_xys = [meta.us; meta.ysprev; m_fw_in1]
+    
+#     def_fn(x) = meta.fn(x[1:length(meta.us)], x[length(meta.us)+1:length(meta.us)+length(meta.ysprev)], x[length(meta.us)+length(meta.ysprev)+1:length(meta.us)+length(meta.ysprev)+s_len])
+#     Vxys = diageye(length(m_xys))*1e-2
+#     Vxys[end-s_len+1:end,end-s_len+1:end] = V_fw_in1    
+# #     def_fn(s) = meta.fn(meta.us, meta.ysprev, s)
+#     (m_tilde, V_tilde, C_tilde) = unscentedStatistics(m_xys, Vxys, def_fn; alpha=default_alpha)
+#     # RTS smoother
+#     (m_bw_out, V_bw_out) = mean_cov(m_out)
+#     (m_bw_in1, V_bw_in1) = smoothRTSMessage(m_tilde, V_tilde, C_tilde, m_xys, Vxys, m_bw_out, V_bw_out)
+#     return MvNormalMeanCovariance(m_bw_in1[end-s_len+1:end], V_bw_in1[end-s_len+1:end, end-s_len+1:end])
+# end

@@ -18,13 +18,25 @@ push!(PGFPlotsX.CUSTOM_PREAMBLE, raw"\usepgfplotslibrary{fillbetween}");
 # This creates a list of parameters for each experiment, we use `@onlyif` to restrict some parameters being dependant on others
 experiments = dict_list(Dict(
     "type"       => "narmax",
-    "n_train"    => 1000,
+    "n_train"    => 100,
     "n_test"     => 1000,
     "delay"      => 3,
     "poly_order" => 2,
-    "iterations" => 10,
+    "iterations" => 50,
     "w_true"     => [1e1, 1e2, 1e3, 1e4],
     "approximation" => [UT(), ET()],
+    "seed"       => collect(1:20)
+))
+
+experiments = dict_list(Dict(
+    "type"       => "narmax",
+    "n_train"    => [200, 400, 800, 1600],
+    "n_test"     => 1000,
+    "delay"      => 1,
+    "poly_order" => 2,
+    "iterations" => 50,
+    "w_true"     => [1e2, 1e3, 1e4],
+    "approximation" => ET(),
     "seed"       => collect(1:10)
 ))
 
@@ -82,10 +94,10 @@ function run_experiment(experiment_params)
     controls = ssm(input_val, order_u)[1]
     X_test, Y_test, U_test = observations_prev[1:test_size-order_u], observations[1:test_size-order_u], controls[1:test_size-order_u];
 
-    h_prior, w_prior = MvNormalMeanPrecision(zeros(delay_e), diageye(delay_e)), GammaShapeRate(w_true, 1.0)
-    η_prior, τ_prior = MvNormalMeanPrecision(zeros(full_order), 1e-1diageye(full_order)),  GammaShapeRate(1e2, 1.0)
+    h_prior, w_prior = MvNormalMeanPrecision(zeros(delay_e), diageye(delay_e)), GammaShapeRate(1.0, 1.0)
+    η_prior, τ_prior = MvNormalMeanPrecision(zeros(full_order), diageye(full_order)),  GammaShapeRate(1e2, 1.0)
     
-    narmax_imessages = (e = NormalMeanPrecision(0.0, 1e-10), );
+    narmax_imessages = (e = NormalMeanPrecision(0.0, 1.0), );
 
     narmax_imarginals = (h = h_prior,
                          w = w_prior,
@@ -131,10 +143,10 @@ function run_experiment(experiment_params)
     η_prior = η.data
     
     ProgressMeter.@showprogress for i in 1:length(Y_test)
-        pred = prediction(h_prior, mean(w_prior), η_prior, τ_prior, X_test[i], U_test[i], full_order=full_order, meta=NonlinearMeta(approximation, ϕ_, X_test[i], U_test[i]))
+        pred = prediction(h_prior, mean(w_prior), η_prior, τ_prior, full_order=full_order, meta=NonlinearMeta(approximation, ϕ_, X_test[i], U_test[i]))
         push!(predictions, pred)
-        w_post, e_post, η_post, τ_post = inference_callback(h_prior, η_prior, τ_prior, w_prior, Y_test[i], X_test[i], U_test[i], delay_e, full_order, ϕ_, approximation)
-        h_prior = MvNormalMeanCovariance([mean(e_post); mean(h_prior)[2:end]], Diagonal([cov(e_post); var(h_prior)[2:end]]))
+        w_post, e_post, η_post, τ_post, h_post = inference_callback(h_prior, η_prior, τ_prior, w_prior, Y_test[i], X_test[i], U_test[i], delay_e, full_order, ϕ_, approximation)
+        h_prior = h_post #MvNormalMeanCovariance([mean(e_post); mean(h_prior)[2:end]], Diagonal([cov(e_post); var(h_prior)[2:end]]))
         η_prior = η_post
         τ_prior = τ_post
         w_prior = w_post
@@ -157,16 +169,16 @@ function run_experiment(experiment_params)
 
     ProgressMeter.@showprogress for i in 1:length(Y_test)
 
-    #     w_post, e_post, η_post, τ_post = inference_callback(h_prior, η_prior, τ_prior, w_prior, simulated_Y[i], simulated_X[i], U_test[i], delay_e, full_order, ϕ_, approximation)
+        w_post, e_post, η_post, τ_post, h_post = inference_callback(h_prior, η_prior, τ_prior, w_prior, simulated_Y[i], simulated_X[i], U_test[i], delay_e, full_order, ϕ_, approximation)
         
-    #     h_prior = MvNormalMeanCovariance([mean(e_post); mean(h_prior)[2:end]], Diagonal([cov(e_post); var(h_prior)[2:end]]))
-    #     η_prior = η_post
-    #     τ_prior = τ_post
-    #     w_prior = w_post
+        h_prior = h_post #MvNormalMeanCovariance([mean(e_post); mean(h_prior)[2:end]], Diagonal([cov(e_post); var(h_prior)[2:end]]))
+        η_prior = η_post
+        τ_prior = τ_post
+        w_prior = w_post
         
         push!(simulated_X, [simulated_Y[i]; simulated_X[i][1:delay_y-1]])
         
-        pred_sim = prediction(h_prior, mean(w_prior), η_prior, τ_prior, simulated_X[end], U_test[i], full_order=full_order, meta=NonlinearMeta(approximation, ϕ_, simulated_X[end], U_test[i]))
+        pred_sim = prediction(h_prior, mean(w_prior), η_prior, τ_prior, full_order=full_order, meta=NonlinearMeta(approximation, ϕ_, simulated_X[end], U_test[i]))
 
         push!(simulated_Y, mean(pred_sim))
         push!(simulated_Y_cov, var(pred_sim))
@@ -187,7 +199,7 @@ function run_experiment(experiment_params)
                                                                         ϕ_fl, priors_fl, M1=delay_u, M2=delay_y, M3=delay_e, N=full_order, num_iters=20, computeFE=false)
 
     # Specify which information should be saved in JLD2 file
-    return @strdict experiment_params result_inf syn_noise η_true Y_test U_test X_test Y_train U_train X_train RMSE_pred RMSE_sim rms_sim_fl rms_pred_fl sim_fl pred_fl coefs_fl
+    return @strdict experiment_params result_inf syn_input syn_output syn_noise η_true Y_test U_test X_test Y_train U_train X_train RMSE_pred RMSE_sim rms_sim_fl rms_pred_fl sim_fl pred_fl coefs_fl
 end
 
 
@@ -196,6 +208,9 @@ results = map(experiments) do experiment
     cache_path  = projectdir("dump", "narmax")
     # Types which should be used for cache file name
     save_types  = (String, Real, ET, UT)
+    # result, _ = produce_or_load(cache_path, experiment, allowedtypes = save_types) do params
+    #     run_experiment(params)
+    # end
     try
         result, _ = produce_or_load(cache_path, experiment, allowedtypes = save_types) do params
             run_experiment(params)
@@ -213,8 +228,8 @@ end
 
 
 ### agile
-true_ws = [1e1, 1e2, 1e3, 1e4]
-rmses  = [[], [], [], []]
+true_ws = [1e2, 1e3, 1e4]
+rmses  = [[], [], []]
 RMSE_UT = SortedDict(true_ws .=> deepcopy.(rmses))
 RMSE_ET = SortedDict(true_ws .=> deepcopy.(rmses))
 RMSE_ACC = SortedDict(true_ws .=> deepcopy.(rmses))
@@ -239,7 +254,7 @@ for i in 1:length(results)
     end
 
     try
-        if typeof(results[i]["experiment_params"]["approximation"]) == UT
+        if typeof(results[i]["experiment_params"]["approximation"]) == ET
             ws = results[i]["experiment_params"]["w_true"]
             push!(RMSE_ACC[ws], results[i]["rms_sim_fl"])
         end
@@ -265,7 +280,27 @@ rmse_et = mean_cov_rmse(RMSE_ET)
 
 gr()
 plot(collect(keys(rmse_acc)), first.(collect(values(rmse_acc))), ribbon=sqrt.(last.(collect(values(rmse_acc)))), label="ACC")
-plot!(collect(keys(rmse_ut)), first.(collect(values(rmse_ut))), ribbon=sqrt.(last.(collect(values(rmse_ut)))), label="UT", xlabel="noise precision", ylabel="RMSE")
+plot!(collect(keys(rmse_ut)), first.(collect(values(rmse_ut))), ribbon=sqrt.(last.(collect(values(rmse_ut)))), label="UT", xlabel="noise precision", ylabel="RMSE", xscale=:log10)
 
 plot(collect(keys(rmse_acc)), first.(collect(values(rmse_acc))), ribbon=sqrt.(last.(collect(values(rmse_acc)))), label="ACC")
-plot!(collect(keys(rmse_et)), first.(collect(values(rmse_et))), ribbon=sqrt.(last.(collect(values(rmse_et)))), label="ET", xlabel="noise precision", ylabel="RMSE")
+plot!(collect(keys(rmse_et)), first.(collect(values(rmse_et))), ribbon=sqrt.(last.(collect(values(rmse_et)))), label="ET", xlabel="noise precision", ylabel="RMSE", xscale=:log10)
+
+## matfile
+using MAT
+inputs = []
+outputs = []
+for i in 1:length(results)
+    try
+        push!(inputs, [results[i]["X_train"]; results[i]["X_test"]])
+        push!(outputs, [results[i]["X_train"]; results[i]["X_test"]])
+    catch error
+        @warn error
+    end
+end
+
+for (x, y, i) in zip(inputs, outputs, collect(1:length(outputs)))
+    matwrite("dump/matfile$i.mat", Dict(
+        "inputs" => x,
+        "outputs" => y
+    ); compress = true)
+end
