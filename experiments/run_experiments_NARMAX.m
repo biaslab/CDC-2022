@@ -51,14 +51,14 @@ while r <= num_repeats
     dbox = waitbar(r/num_repeats);
     
     % Generate signal
-    [yTrain, yTest, uTrain, uTest, system] = gen_signal(options);
+    [yTrain, yTest, uTrain, uTest, eTrain, eTest, system] = gen_signal(options);
     
     N_m = size(system.comb,2);
     
     if (max(abs(yTrain)) < 100) && (sum(isnan(yTrain))==0)
     
         % Write signal to file
-        save("../datasets/gen-by-matlab/realizations/NARMAXsignal_stde"+num2str(options.stde)+"_degree"+num2str(options.nd)+"_delays"+num2str(M_m)+"_D"+num2str(N_m)+"_r" + string(r) + ".mat", "yTrain", "yTest", "uTrain", "uTest", "system", "options")
+        save("../datasets/verification/realizations/NARMAXsignal_stde"+num2str(options.stde)+"_degree"+num2str(options.nd)+"_delays"+num2str(M_m)+"_D"+num2str(N_m)+"_r" + string(r) + ".mat", "yTrain", "yTest", "uTrain", "uTest", "eTrain", "eTest", "system", "options")
         
         % Preallocate result arrays
         RMS_prd = zeros(1,num_trnsizes);
@@ -91,7 +91,7 @@ while r <= num_repeats
         end
         
         % Write results to file
-        save("results/results-NARMAX_ILS_stde"+num2str(options.stde)+"_degree"+num2str(options.nd)+"_delays"+num2str(M_m)+"_D"+num2str(N_m)+"_degree3_r"+num2str(r)+".mat", "RMS_prd", "RMS_sim")
+        save("results/results-NARMAX_ILS_stde"+num2str(options.stde)+"_pol"+num2str(options.nd)+"_delays"+num2str(M_m)+"_D"+num2str(N_m)+"_degree3_r"+num2str(r)+".mat", "RMS_prd", "RMS_sim")
         
         results_prd(r,:) = RMS_prd;
         results_sim(r,:) = RMS_sim;

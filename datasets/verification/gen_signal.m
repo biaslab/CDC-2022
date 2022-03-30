@@ -1,4 +1,4 @@
-function [yTrain, yTest, uTrain, uTest, ToySystem] = gen_signal(options)
+function [yTrain, yTest, uTrain, uTest, eTrain, eTest, ToySystem] = gen_signal(options)
 
 % Unpack options
 na = options.na;
@@ -47,10 +47,13 @@ ToySystem.theta = sysTheta;
 uTest = stdu*uTest; % make test signal slightly smaller than training
 uTrain = stdu*uTrain;
 
+eTrain = stde*randn(size(uTrain));
+eTest = stde*randn(size(uTest));
+
 dataSysTrain.u = uTrain;
-dataSysTrain.e = stde*randn(size(uTrain));
+dataSysTrain.e = eTrain;
 dataSysTest.u = uTest;
-dataSysTest.e = stde*randn(size(uTest));
+dataSysTest.e = eTest;
 
 %% Generate output
 
