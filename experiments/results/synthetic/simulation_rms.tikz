@@ -1,0 +1,121 @@
+\begin{tikzpicture}[/tikz/background rectangle/.style={fill={rgb,1:red,1.0;green,1.0;blue,1.0}, draw opacity={1.0}}, show background rectangle]
+\begin{axis}[point meta max={nan}, point meta min={nan}, legend cell align={left}, legend columns={1}, title={simulation}, title style={at={{(0.5,1)}}, anchor={south}, font={{\fontsize{14 pt}{18.2 pt}\selectfont}}, color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, rotate={0.0}}, legend style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, line width={1}, solid, fill={rgb,1:red,1.0;green,1.0;blue,1.0}, fill opacity={1.0}, text opacity={1.0}, font={{\fontsize{10 pt}{13.0 pt}\selectfont}}, text={rgb,1:red,0.0;green,0.0;blue,0.0}, cells={anchor={center}}, at={(0.98, 0.98)}, anchor={north east}}, axis background/.style={fill={rgb,1:red,1.0;green,1.0;blue,1.0}, opacity={1.0}}, anchor={north west}, xshift={1.0mm}, yshift={-1.0mm}, width={150.4mm}, height={74.2mm}, scaled x ticks={false}, xlabel={length of training signal}, x tick style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, opacity={1.0}}, x tick label style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, opacity={1.0}, rotate={0}}, xlabel style={at={(ticklabel cs:0.5)}, anchor=near ticklabel, at={{(ticklabel cs:0.5)}}, anchor={near ticklabel}, font={{\fontsize{13 pt}{16.900000000000002 pt}\selectfont}}, color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, rotate={0.0}}, xmajorgrids={true}, xmin={73.0}, xmax={1027.0}, xtick={{100.0,200.0,500.0,1000.0}}, xticklabels={{$100$,$200$,$500$,$1000$}}, xtick align={inside}, xticklabel style={font={{\fontsize{10 pt}{13.0 pt}\selectfont}}, color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, rotate={0.0}}, x grid style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={0.1}, line width={0.5}, solid}, axis x line*={left}, x axis line style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, line width={1}, solid}, scaled y ticks={false}, ylabel={RMS}, y tick style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, opacity={1.0}}, y tick label style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, opacity={1.0}, rotate={0}}, ylabel style={at={(ticklabel cs:0.5)}, anchor=near ticklabel, at={{(ticklabel cs:0.5)}}, anchor={near ticklabel}, font={{\fontsize{13 pt}{16.900000000000002 pt}\selectfont}}, color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, rotate={0.0}}, ymajorgrids={true}, ymin={0.04888855088570931}, ymax={0.15497434296198903}, ytick={{0.06,0.08,0.1,0.12,0.14}}, yticklabels={{$0.06$,$0.08$,$0.10$,$0.12$,$0.14$}}, ytick align={inside}, yticklabel style={font={{\fontsize{10 pt}{13.0 pt}\selectfont}}, color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, rotate={0.0}}, y grid style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={0.1}, line width={0.5}, solid}, axis y line*={left}, y axis line style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, line width={1}, solid}, colorbar={false}]
+    \addplot+[line width={0}, draw opacity={0}, fill={rgb,1:red,0.0;green,0.0;blue,0.0}, fill opacity={0.3}, mark={none}, forget plot]
+        coordinates {
+            (100.0,0.09476882070830174)
+            (200.0,0.0695924202826771)
+            (500.0,0.057289035316092946)
+            (1000.0,0.05279097837267592)
+            (1000.0,0.05225056093046312)
+            (500.0,0.05578041739720226)
+            (200.0,0.06449899653733603)
+            (100.0,0.08713416610050997)
+            (100.0,0.09476882070830174)
+        }
+        ;
+    \addplot+[line width={0}, draw opacity={0}, fill={rgb,1:red,0.0;green,0.0;blue,0.0}, fill opacity={0.3}, mark={none}, forget plot]
+        coordinates {
+            (100.0,0.09476882070830174)
+            (200.0,0.0695924202826771)
+            (500.0,0.057289035316092946)
+            (1000.0,0.05279097837267592)
+            (1000.0,0.05333139581488872)
+            (500.0,0.05879765323498363)
+            (200.0,0.07468584402801819)
+            (100.0,0.1024034753160935)
+            (100.0,0.09476882070830174)
+        }
+        ;
+    \addplot[color={rgb,1:red,0.0;green,0.0;blue,0.0}, name path={66e74498-de85-4ddd-92f5-99486820e702}, legend image code/.code={{
+    \draw[fill={rgb,1:red,0.0;green,0.0;blue,0.0}, fill opacity={0.3}] (0cm,-0.1cm) rectangle (0.6cm,0.1cm);
+    }}, draw opacity={0.7}, line width={2}, solid, mark={*}, mark size={3.0 pt}, mark repeat={1}, mark options={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={0.7}, fill={rgb,1:red,0.0;green,0.0;blue,0.0}, fill opacity={0.7}, line width={0.75}, rotate={0}, solid}]
+        table[row sep={\\}]
+        {
+            \\
+            100.0  0.09476882070830174  \\
+            200.0  0.0695924202826771  \\
+            500.0  0.057289035316092946  \\
+            1000.0  0.05279097837267592  \\
+        }
+        ;
+    \addlegendentry {fVB}
+    \addplot+[line width={0}, draw opacity={0}, fill={rgb,1:red,1.0;green,0.0;blue,0.0}, fill opacity={0.3}, mark={none}, forget plot]
+        coordinates {
+            (100.0,0.12644958197085393)
+            (200.0,0.09235331465835327)
+            (500.0,0.06208267099913426)
+            (1000.0,0.05318099307230031)
+            (1000.0,0.052553874068227785)
+            (500.0,0.059427213123764124)
+            (200.0,0.08307549580315893)
+            (100.0,0.11881090450379056)
+            (100.0,0.12644958197085393)
+        }
+        ;
+    \addplot+[line width={0}, draw opacity={0}, fill={rgb,1:red,1.0;green,0.0;blue,0.0}, fill opacity={0.3}, mark={none}, forget plot]
+        coordinates {
+            (100.0,0.12644958197085393)
+            (200.0,0.09235331465835327)
+            (500.0,0.06208267099913426)
+            (1000.0,0.05318099307230031)
+            (1000.0,0.05380811207637283)
+            (500.0,0.06473812887450439)
+            (200.0,0.1016311335135476)
+            (100.0,0.1340882594379173)
+            (100.0,0.12644958197085393)
+        }
+        ;
+    \addplot[color={rgb,1:red,1.0;green,0.0;blue,0.0}, name path={f87c8d61-5b22-4579-acfb-987eb03ff908}, legend image code/.code={{
+    \draw[fill={rgb,1:red,1.0;green,0.0;blue,0.0}, fill opacity={0.3}] (0cm,-0.1cm) rectangle (0.6cm,0.1cm);
+    }}, draw opacity={0.7}, line width={2}, solid, mark={*}, mark size={2.25 pt}, mark repeat={1}, mark options={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={0.7}, fill={rgb,1:red,1.0;green,0.0;blue,0.0}, fill opacity={0.7}, line width={0.75}, rotate={0}, solid}]
+        table[row sep={\\}]
+        {
+            \\
+            100.0  0.12644958197085393  \\
+            200.0  0.09235331465835327  \\
+            500.0  0.06208267099913426  \\
+            1000.0  0.05318099307230031  \\
+        }
+        ;
+    \addlegendentry {cVB}
+    \addplot+[line width={0}, draw opacity={0}, fill={rgb,1:red,0.502;green,0.0;blue,0.502}, fill opacity={0.3}, mark={none}, forget plot]
+        coordinates {
+            (100.0,0.1422647379489371)
+            (200.0,0.09920199296362)
+            (500.0,0.060392501862243785)
+            (1000.0,0.05228050340925585)
+            (1000.0,0.051890978963339864)
+            (500.0,0.058673327944114)
+            (200.0,0.08971525702363692)
+            (100.0,0.13255756101351573)
+            (100.0,0.1422647379489371)
+        }
+        ;
+    \addplot+[line width={0}, draw opacity={0}, fill={rgb,1:red,0.502;green,0.0;blue,0.502}, fill opacity={0.3}, mark={none}, forget plot]
+        coordinates {
+            (100.0,0.1422647379489371)
+            (200.0,0.09920199296362)
+            (500.0,0.060392501862243785)
+            (1000.0,0.05228050340925585)
+            (1000.0,0.05267002785517184)
+            (500.0,0.06211167578037357)
+            (200.0,0.1086887289036031)
+            (100.0,0.15197191488435846)
+            (100.0,0.1422647379489371)
+        }
+        ;
+    \addplot[color={rgb,1:red,0.502;green,0.0;blue,0.502}, name path={23ae5a9f-5098-4e86-ac87-2fc648268be7}, legend image code/.code={{
+    \draw[fill={rgb,1:red,0.502;green,0.0;blue,0.502}, fill opacity={0.3}] (0cm,-0.1cm) rectangle (0.6cm,0.1cm);
+    }}, draw opacity={0.7}, line width={2}, solid, mark={*}, mark size={3.0 pt}, mark repeat={1}, mark options={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={0.4}, fill={rgb,1:red,0.502;green,0.0;blue,0.502}, fill opacity={0.4}, line width={0.75}, rotate={0}, solid}]
+        table[row sep={\\}]
+        {
+            \\
+            100.0  0.1422647379489371  \\
+            200.0  0.09920199296362  \\
+            500.0  0.060392501862243785  \\
+            1000.0  0.05228050340925585  \\
+        }
+        ;
+    \addlegendentry {ILS}
+\end{axis}
+\end{tikzpicture}

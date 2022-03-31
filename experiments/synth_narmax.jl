@@ -189,7 +189,7 @@ function run_experiment(experiment_params)
     rms_sim_fl, rms_pred_fl, sim_fl, pred_fl, coefs_fl, residuals_fl = ForneyNarmax.experiment_FEM(input_trn[1:n_train], output_trn[1:n_train], input_tst[1:n_test], output_tst[1:n_test], ϕ_fl, priors_fl, M1=delay_u, M2=delay_y, M3=delay_e, N=full_order, num_iters=20, computeFE=false)
 
     # Specify which information should be saved in JLD2 file
-    return @strdict experiment_params result_inf η_true γ_true input_trn output_trn noise_trn input_tst output_tst noise_tst RMSE_pred RMSE_sim coefs_fl rms_sim_fl rms_pred_fl sim_fl pred_fl residuals_fl
+    return @strdict experiment_params result_inf η_true γ_true input_trn output_trn noise_trn input_tst output_tst noise_tst RMSE_pred RMSE_sim coefs_fl rms_sim_fl rms_pred_fl sim_fl pred_fl residuals_fl predictions simulated_Y simulated_Y_cov
 end
 
 
@@ -392,33 +392,11 @@ begin
     savefig(pe_, "experiments/results/synthetic/cVB_errors.tikz")
 end
 
-# coefficients inference
-# estimated_θ = mean(example_res["result_inf"].posteriors[:η]), var(example_res["result_inf"].posteriors[:η])
+# prediction
 begin
     pick = 11
     example_res = results[pick]
-    real_θ = deepcopy(example_res["η_true"])
-    plot(real_θ)
-    filter!(e -> e > 0.1, real_θ)
-    # real_θ = symlog.(real_θ, 0.0001)
-    pθ = plot()
-
-#     θms = mean.(θ)
-#     θvs = var.(θ)
     
-#     l = length(θms)
-
-#     edim(e) = (a) -> map(r -> r[e], a)
-
-#     for i in 1:length(first(θms))
-#         pθ = plot!(pθ, θms |> edim(i), ribbon = θvs |> edim(i) .|> sqrt, label = "Estimated θ[$i]")
-#     end
-    
-    for i in 1:length(real_θ)
-        pθ = plot!(pθ, [ real_θ[i] ], seriestype = :hline, label = "Real θ[$i]")
-    end
-    
-    plot(pθ, legend = :outertopright, size = (500, 400))
+    # plot(mean.(predictions), ribbon=sqrt.(first.(cov.(predictions))), label="predictions")
+    # plot!(Y_test, xlims=(450, 500), title="1-step ahead prediction", label="observations")
 end
-
-plot(real_θ)
