@@ -338,7 +338,6 @@ end
 
 # inference results
 # errors tracking
-
 #FIXME: This function should be removed, the errors must be obtained from results
 function get_train_errors(pick, n_train=100, n_test=100)
     options = Dict("na"=>1, "nb"=>1, "ne"=>1, "nd"=>3, "dc"=>false, "crossTerms"=>true, "noiseCrossTerms"=>false)
@@ -376,10 +375,9 @@ function get_train_errors(pick, n_train=100, n_test=100)
 
     return residuals_fl
 end
-
 begin
     xlims = (0, 100)
-    pick = 10
+    pick = 11
     example_res = results[pick]
     inf_errors = mean.(example_res["result_inf"].posteriors[:e]), var.(example_res["result_inf"].posteriors[:e])
     err_len = length(inf_errors[1])
@@ -393,3 +391,34 @@ begin
     plot!(noises[1:end], width=1.5, label="generated", xlims=xlims, size=(500, 400), ylabelfontsize=13, xlabelfontsize=13, legendfontsize=10, markeralpha=0.4, xtickfontsize=10, ytickfontsize=10, legend=:topright, xlabel="k", ylabel="amplitude", title="",)
     savefig(pe_, "experiments/results/synthetic/cVB_errors.tikz")
 end
+
+# coefficients inference
+# estimated_θ = mean(example_res["result_inf"].posteriors[:η]), var(example_res["result_inf"].posteriors[:η])
+begin
+    pick = 11
+    example_res = results[pick]
+    real_θ = deepcopy(example_res["η_true"])
+    plot(real_θ)
+    filter!(e -> e > 0.1, real_θ)
+    # real_θ = symlog.(real_θ, 0.0001)
+    pθ = plot()
+
+#     θms = mean.(θ)
+#     θvs = var.(θ)
+    
+#     l = length(θms)
+
+#     edim(e) = (a) -> map(r -> r[e], a)
+
+#     for i in 1:length(first(θms))
+#         pθ = plot!(pθ, θms |> edim(i), ribbon = θvs |> edim(i) .|> sqrt, label = "Estimated θ[$i]")
+#     end
+    
+    for i in 1:length(real_θ)
+        pθ = plot!(pθ, [ real_θ[i] ], seriestype = :hline, label = "Real θ[$i]")
+    end
+    
+    plot(pθ, legend = :outertopright, size = (500, 400))
+end
+
+plot(real_θ)
