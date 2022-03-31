@@ -60,7 +60,7 @@ end
 
 ## Project structure
 
-- `datasets` - datasets of synthetic data used for experiments
+- `datasets/realizations` - datasets of synthetic data used for experiments
 - `dump` - (optional), cached results of the experiments in JLD2 files
 - `experiments` - code/scripts for experiments
 - `development` - Jupyter notebooks used during development stage 
