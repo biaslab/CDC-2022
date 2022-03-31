@@ -4,5 +4,6 @@ __pycache__
 *.vscode
 *.jld
 *.jld2
-dump
+dump/
 .DS_Store
+old/

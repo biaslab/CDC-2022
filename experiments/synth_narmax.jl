@@ -391,12 +391,3 @@ begin
     plot!(noises[1:end], width=1.5, label="generated", xlims=xlims, size=(600, 300), ylabelfontsize=13, xlabelfontsize=13, legendfontsize=10, markeralpha=0.4, xtickfontsize=10, ytickfontsize=10, legend=:topright, xlabel="k", ylabel="amplitude", title="",)
     savefig(pe_, "experiments/results/synthetic/cVB_errors.tikz")
 end
-
-# prediction
-begin
-    pick = 11
-    example_res = results[pick]
-    
-    # plot(mean.(predictions), ribbon=sqrt.(first.(cov.(predictions))), label="predictions")
-    # plot!(Y_test, xlims=(450, 500), title="1-step ahead prediction", label="observations")
-end
