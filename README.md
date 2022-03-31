@@ -1,4 +1,4 @@
-This repository contains a set of experiments for the inference in **Nonlinear AutoRegressive Moving Average with eXogenous input** through message-passing.
+This repository contains a set of experiments for the inference in **Nonlinear AutoRegressive Moving Average with eXogenous input (NARMAX)** through message-passing.
 
 ## Dependencies
 
