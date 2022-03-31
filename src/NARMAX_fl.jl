@@ -150,14 +150,14 @@ module ForneyNarmax
         
         # Prepare array
         predictions = (zeros(T_tst,), zeros(T_tst,))
-        errors = zeros(T_tst,)
+        errors_ = zeros(T_tst,)
     
         for k in maxM+1:T_tst
             
             # Update history vectors
             u_kmin1 = input_tst[k-1:-1:k-M1]
             y_kmin1 = output_tst[k-1:-1:k-M2]
-            e_kmin1 = errors[k-1:-1:k-M3]
+            e_kmin1 = errors_[k-1:-1:k-M3]
                 
             # Posterior predictive
             ϕx = ϕ([input_tst[k]; u_kmin1; y_kmin1; e_kmin1])
@@ -165,7 +165,7 @@ module ForneyNarmax
             # predictions[2][k] = ϕx'*inv(θ_k[2])*ϕx + inv(τ_k[1] / τ_k[2])
     
             # Update error
-            errors[k] = output_tst[k] - predictions[1][k]
+            errors_[k] = output_tst[k] - predictions[1][k]
             
         end
     
@@ -185,7 +185,7 @@ module ForneyNarmax
             ϕx = ϕ([input_tst[k]; u_kmin1; y_kmin1; e_kmin1])
             simulations[1][k] = θ_k[1]'*ϕx
             
-            # simulations[2][k] = ϕx'*inv(θ_k[2])*ϕx + inv(τ_k[1] / τ_k[2])
+            simulations[2][k] = ϕx'*inv(θ_k[2])*ϕx + inv(τ_k[1] / τ_k[2])
             
         end
     
@@ -198,7 +198,7 @@ module ForneyNarmax
         if computeFE
             return RMS_sim, RMS_prd, Fq
         else
-            return RMS_sim, RMS_prd, simulations, predictions, θ_k[1]
+            return RMS_sim, RMS_prd, simulations, predictions, θ_k, errors
         end
     end
 

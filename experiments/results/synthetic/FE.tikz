@@ -1,0 +1,61 @@
+\begin{tikzpicture}[/tikz/background rectangle/.style={fill={rgb,1:red,1.0;green,1.0;blue,1.0}, draw opacity={1.0}}, show background rectangle]
+\begin{axis}[point meta max={nan}, point meta min={nan}, legend cell align={left}, legend columns={1}, title={}, title style={at={{(0.5,1)}}, anchor={south}, font={{\fontsize{14 pt}{18.2 pt}\selectfont}}, color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, rotate={0.0}}, legend style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, line width={1}, solid, fill={rgb,1:red,1.0;green,1.0;blue,1.0}, fill opacity={1.0}, text opacity={1.0}, font={{\fontsize{10 pt}{13.0 pt}\selectfont}}, text={rgb,1:red,0.0;green,0.0;blue,0.0}, cells={anchor={center}}, at={(0.98, 0.98)}, anchor={north east}}, axis background/.style={fill={rgb,1:red,1.0;green,1.0;blue,1.0}, opacity={1.0}}, anchor={north west}, xshift={1.0mm}, yshift={-1.0mm}, width={112.3mm}, height={74.2mm}, scaled x ticks={false}, xlabel={iteration}, x tick style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, opacity={1.0}}, x tick label style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, opacity={1.0}, rotate={0}}, xlabel style={at={(ticklabel cs:0.5)}, anchor=near ticklabel, at={{(ticklabel cs:0.5)}}, anchor={near ticklabel}, font={{\fontsize{13 pt}{16.900000000000002 pt}\selectfont}}, color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, rotate={0.0}}, xmajorgrids={true}, xmin={-0.47}, xmax={51.47}, xtick={{0.0,10.0,20.0,30.0,40.0,50.0}}, xticklabels={{$0$,$10$,$20$,$30$,$40$,$50$}}, xtick align={inside}, xticklabel style={font={{\fontsize{10 pt}{13.0 pt}\selectfont}}, color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, rotate={0.0}}, x grid style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={0.1}, line width={0.5}, solid}, axis x line*={left}, x axis line style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, line width={1}, solid}, scaled y ticks={false}, ylabel={Bethe free energy [nats]}, y tick style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, opacity={1.0}}, y tick label style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, opacity={1.0}, rotate={0}}, ylabel style={at={(ticklabel cs:0.5)}, anchor=near ticklabel, at={{(ticklabel cs:0.5)}}, anchor={near ticklabel}, font={{\fontsize{13 pt}{16.900000000000002 pt}\selectfont}}, color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, rotate={0.0}}, ymajorgrids={true}, ymin={-1055.066235521597}, ymax={2846.8264546261667}, ytick={{-1000.0,0.0,1000.0,2000.0}}, yticklabels={{$-1000$,$0$,$1000$,$2000$}}, ytick align={inside}, yticklabel style={font={{\fontsize{10 pt}{13.0 pt}\selectfont}}, color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, rotate={0.0}}, y grid style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={0.1}, line width={0.5}, solid}, axis y line*={left}, y axis line style={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={1.0}, line width={1}, solid}, colorbar={false}]
+    \addplot[color={rgb,1:red,1.0;green,0.0;blue,0.0}, name path={4f0e9707-08ca-40c3-aea5-6f35d8e0ad34}, draw opacity={1.0}, line width={1}, solid, mark={*}, mark size={2.25 pt}, mark repeat={1}, mark options={color={rgb,1:red,0.0;green,0.0;blue,0.0}, draw opacity={0.3}, fill={rgb,1:red,1.0;green,0.0;blue,0.0}, fill opacity={0.3}, line width={0.75}, rotate={0}, solid}]
+        table[row sep={\\}]
+        {
+            \\
+            1.0  2736.3955294333055  \\
+            2.0  2137.4403221245902  \\
+            3.0  1994.8490449834626  \\
+            4.0  1306.0627365357948  \\
+            5.0  1110.094019006877  \\
+            6.0  801.8934386933938  \\
+            7.0  460.20546122916653  \\
+            8.0  143.58657165571893  \\
+            9.0  -129.54608368183196  \\
+            10.0  -358.7756326178649  \\
+            11.0  -543.1722670516006  \\
+            12.0  -682.7876884791788  \\
+            13.0  -781.844870072712  \\
+            14.0  -847.837657596802  \\
+            15.0  -889.2385121309494  \\
+            16.0  -913.8042823027444  \\
+            17.0  -927.723418929046  \\
+            18.0  -935.3487402961641  \\
+            19.0  -939.4432899563355  \\
+            20.0  -941.6353833736663  \\
+            21.0  -942.8013859716444  \\
+            22.0  -943.4487504464093  \\
+            23.0  -943.8021107794623  \\
+            24.0  -944.0161392451387  \\
+            25.0  -944.1490666487624  \\
+            26.0  -944.2378761762283  \\
+            27.0  -944.296369913051  \\
+            28.0  -944.3408128385788  \\
+            29.0  -944.3802630121181  \\
+            30.0  -944.409557604899  \\
+            31.0  -944.4246009288493  \\
+            32.0  -944.4582538422204  \\
+            33.0  -944.4700604667241  \\
+            34.0  -944.4921369048969  \\
+            35.0  -944.5063695829828  \\
+            36.0  -944.5274997432078  \\
+            37.0  -944.5358301164862  \\
+            38.0  -944.5485250877962  \\
+            39.0  -944.5564640450621  \\
+            40.0  -944.5731376323299  \\
+            41.0  -944.5692261087919  \\
+            42.0  -944.5900168467473  \\
+            43.0  -944.5960093407037  \\
+            44.0  -944.6069476215288  \\
+            45.0  -944.6116753160389  \\
+            46.0  -944.611499800822  \\
+            47.0  -944.6182108921171  \\
+            48.0  -944.6238041891752  \\
+            49.0  -944.625148035959  \\
+            50.0  -944.6353103287358  \\
+        }
+        ;
+    \addlegendentry {BFE}
+\end{axis}
+\end{tikzpicture}

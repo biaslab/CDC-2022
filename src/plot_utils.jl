@@ -1,4 +1,4 @@
-export plot_generated, plot_inference, plot_fe
+export plot_generated, plot_inference
 
 using Plots
 using PGFPlotsX
@@ -6,8 +6,6 @@ using Parameters
 using LaTeXStrings
 using ColorSchemes
 using Colors
-pgfplotsx()
-push!(PGFPlotsX.CUSTOM_PREAMBLE, raw"\usepgfplotslibrary{fillbetween}");
 
 function plot_generated(path, input, output, sig_len=length([input; output]), skip=10)
     plt_generated = @pgf GroupPlot(
@@ -120,3 +118,15 @@ function plot_generated(path, input, output, sig_len=length([input; output]), sk
     pgfsave(path, plt_generated)
 end
 
+# function plot_fe(path, FE, vmp_its, start=3, )
+#     axis4 = @pgf Axis({xlabel="iteration",
+#                     ylabel="Bethe free energy [nats]",
+#                     legend_pos = "north east",
+#                     legend_cell_align="{left}",
+#                     scale = 1.0,
+#                     grid = "major",
+#         },
+#         Plot({mark = "o", "red", mark_size=1}, Coordinates(collect(start:vmp_its), FE[start:end])), LegendEntry("BFE"))
+#     pgfsave(path, axis4)
+    
+# end

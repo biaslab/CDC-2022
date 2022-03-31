@@ -2,14 +2,6 @@ export NonlinearNode, NonlinearMeta, ET, UT
 
 struct NonlinearNode end # Dummy structure just to make Julia happy
 
-# struct NonlinearMeta{F}
-#     fn       :: F   # Nonlinear function, we assume 1 float input - 1 float ouput
-#     nsamples :: Int # Number of samples used in approximation
-#     ysprev   :: Vector{Float64} # Previous outputs
-#     us       :: Vector{Float64} # Controls
-#     seed     :: Int
-# end
-
 struct ET end
 struct UT end
 
@@ -22,68 +14,10 @@ end
 
 @node NonlinearNode Deterministic [ out, in ]
 
-# Rule for outbound message on `out` edge given inbound message on `in` edge
-# @rule NonlinearNode(:out, Marginalisation) (m_in::NormalDistributionsFamily, meta::NonlinearMeta) = begin
-#     rng = MersenneTwister(meta.seed)
-#     samples = [rand(rng, m_in) for _ in 1:meta.nsamples]
-#     def_fn(s) = meta.fn(meta.ysprev, meta.us, s)
-#     sl = SampleList(def_fn.(samples))
-#     return MvNormalMeanCovariance(mean(sl), cov(sl))
-# end
-
-# # Rule for outbound message on `in` edge given inbound message on `out` edge
-# @rule NonlinearNode(:in, Marginalisation) (m_out::NormalDistributionsFamily, m_in::NormalDistributionsFamily, meta::NonlinearMeta) = begin
-#     def_fn(s) = meta.fn(meta.ysprev, meta.us, s)
-#     log_m_(x) = logpdf(m_out, def_fn(x))
-#     rng = MersenneTwister(meta.seed)
-#     samples = [rand(rng, m_in) for _ in 1:meta.nsamples]
-#     weights = log_m_.(samples)
-#     # weights = map(log_m_, samples)
-#     max_val = max(weights...)
-
-#     log_norm = max_val + log(sum(exp.(weights .- max_val)))
-
-#     weights = exp.(weights .- log_norm)
-#     # map!(w -> exp(w - log_norm), weights, weights)
-
-#     μ = sum(weights.*samples)
-#     # μ = mapreduce(d -> d[1] * d[2], +, zip(weights, samples))
-#     # tmp = similar(μ)
-
-#     tot = zeros(length(samples[1]), length(samples[1]))
-#     for i = 1:meta.nsamples
-#         # map!(-, tmp, samples[i], μ)
-#         # tot += tmp * transpose(tmp) .* weights[i]
-#         tot += (samples[i] .- μ) * transpose(samples[i] .- μ) .* weights[i]
-#     end
-#     Σ = (meta.nsamples/(meta.nsamples - 1)) .* tot
-#     prec = inv(Σ) - precision(m_in)
-#     prec_mu = inv(Σ)*μ - weightedmean(m_in)
-#     return MvNormalWeightedMeanPrecision(prec_mu, prec)
-# end
-
-# # Laplace Approximation
-# @rule NonlinearNode(:in, Marginalisation) (m_out::NormalDistributionsFamily, m_in::NormalDistributionsFamily, meta::NonlinearMeta) = begin
-#     def_fn(s) = meta.fn(meta.ysprev, meta.us, s)
-#     log_m_(x) = logpdf(m_out, def_fn(x))
-
-#     # Optimize with gradient ascent
-#     log_joint(x) = logpdf(m_out, def_fn(x)) + logpdf(m_in, x)
-#     neg_log_joint(x) = -log_joint(x)
-#     d_log_joint(x) = ForwardDiff.gradient(log_joint, x)
-#     m_initial = mean(m_in)
-
-#     #mean = gradientOptimization(log_joint, d_log_joint, m_initial, 0.01)
-#     μ = optimize(neg_log_joint, m_initial, LBFGS(); autodiff = :forward).minimizer
-#     W = -ForwardDiff.jacobian(d_log_joint, μ)
-
-#     prec = W - precision(m_in)
-#     prec_mu = W*μ - weightedmean(m_in)
-#     return MvNormalWeightedMeanPrecision(prec_mu, prec)
-# end
 
 # EKF forward
 @rule NonlinearNode(:out, Marginalisation) (m_in::NormalDistributionsFamily, meta::NonlinearMeta{ET}) = begin
+    @warn "Method is broken"
     def_fn(s) = meta.fn(meta.us, meta.ysprev, s)
     m_ = mean(m_in)
     P_ = cov(m_in)
@@ -95,6 +29,7 @@ end
 
 # EKF backward
 @rule NonlinearNode(:in, Marginalisation) (m_out::NormalDistributionsFamily, m_in::NormalDistributionsFamily, meta::NonlinearMeta{ET}) = begin
+    @warn "Method is broken"
     def_fn(s) = meta.fn(meta.us, meta.ysprev, s)
     m_ = mean(m_in)
     P_ = cov(m_in)
@@ -134,7 +69,6 @@ end
 const default_alpha = 1e-3 # Default value for the spread parameter
 const default_beta = 2.0
 const default_kappa = 0.0
-
 
 ## Return the sigma points and weights for a Gaussian distribution
 
@@ -202,15 +136,16 @@ end
 
 @rule NonlinearNode(:out, Marginalisation) (m_in::NormalDistributionsFamily, meta::NonlinearMeta{UT}) = begin
     s_len = length(mean(m_in))
+    u_len = length(meta.us)
+    y_len = length(meta.ysprev)
     (m_fw_in1, V_fw_in1) = mean_cov(m_in)
     m_xys = [meta.us; meta.ysprev; m_fw_in1]
     
-    def_fn(x) = meta.fn(x[1:length(meta.us)], x[length(meta.us)+1:length(meta.us)+length(meta.ysprev)], x[length(meta.us)+length(meta.ysprev)+1:length(meta.us)+length(meta.ysprev)+s_len]) 
-#     def_fn(u, y, s) = meta.fn(u, y, s)  
+    def_fn(x) = meta.fn(x[1:u_len], x[u_len+1:u_len+y_len], x[u_len+y_len+1:u_len+y_len+s_len]) 
     Vxys = diageye(length(m_xys))*1e-4
         
-        Vxys[end-s_len+1:end,end-s_len+1:end] = V_fw_in1
-#     def_fn(s) = meta.fn(meta.us, meta.ysprev, s)
+    Vxys[end-s_len+1:end,end-s_len+1:end] = V_fw_in1
+
     (m_tilde, V_tilde, _) = unscentedStatistics(m_xys, Vxys, def_fn; alpha=default_alpha)
     return MvNormalMeanCovariance(m_tilde,V_tilde)
 end
@@ -226,21 +161,3 @@ end
     (m_bw_in1, V_bw_in1) = smoothRTSMessage(m_tilde, V_tilde, C_tilde, m_fw_in1, V_fw_in1, m_bw_out, V_bw_out)
     return MvNormalMeanCovariance(m_bw_in1, V_bw_in1)
 end
-
-    
-# @rule NonlinearNode(:in, Marginalisation) (m_out::NormalDistributionsFamily, m_in::NormalDistributionsFamily, meta::NonlinearMeta{UT}) = begin
-        
-#     s_len = length(mean(m_in))
-#     (m_fw_in1, V_fw_in1) = mean_cov(m_in)
-#     m_xys = [meta.us; meta.ysprev; m_fw_in1]
-    
-#     def_fn(x) = meta.fn(x[1:length(meta.us)], x[length(meta.us)+1:length(meta.us)+length(meta.ysprev)], x[length(meta.us)+length(meta.ysprev)+1:length(meta.us)+length(meta.ysprev)+s_len])
-#     Vxys = diageye(length(m_xys))*1e-2
-#     Vxys[end-s_len+1:end,end-s_len+1:end] = V_fw_in1    
-# #     def_fn(s) = meta.fn(meta.us, meta.ysprev, s)
-#     (m_tilde, V_tilde, C_tilde) = unscentedStatistics(m_xys, Vxys, def_fn; alpha=default_alpha)
-#     # RTS smoother
-#     (m_bw_out, V_bw_out) = mean_cov(m_out)
-#     (m_bw_in1, V_bw_in1) = smoothRTSMessage(m_tilde, V_tilde, C_tilde, m_xys, Vxys, m_bw_out, V_bw_out)
-#     return MvNormalMeanCovariance(m_bw_in1[end-s_len+1:end], V_bw_in1[end-s_len+1:end, end-s_len+1:end])
-# end
