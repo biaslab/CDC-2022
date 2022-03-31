@@ -325,7 +325,7 @@ begin
     ps = plot(train_sizes, first.(collect(values(rmse_sim_ut))), ribbon=(last.(collect(values(rmse_sim_ut)))), label="fVB", xlabel="length of training signal", markershape=:circle, fillalpha=0.3, markersize=4, color=:black, width=2, alpha=0.7)
     plot!(train_sizes, first.(collect(values(rmse_sim_acc))), ribbon=(last.(collect(values(rmse_sim_acc)))), label="cVB", title="simulation", xticks=train_sizes, markershape=:circle, ylabel="RMS", fillalpha=0.3, markersize=3, color=:red, width=2, alpha=0.7)
     plot!(train_sizes, first.(collect(values(rmse_sim_ils))), ribbon=(last.(collect(values(rmse_sim_ils)))), label="ILS", xlabel="length of training signal", markershape=:circle, fillalpha=0.3, markersize=4, color=:purple, width=2, alpha=0.7, legend=:topright, size=(600, 300),ylabelfontsize=13, xlabelfontsize=13, legendfontsize=10, markeralpha=0.4, xtickfontsize=10, ytickfontsize=10)
-    savefig(ps, "experiments/results/synthetic/simulation.tikz")
+    savefig(ps, "experiments/results/synthetic/simulation_rms.tikz")
 
     rmse_pred_acc = mean_std_rmse(RMSE_pred_ACC)
     rmse_pred_ut = mean_std_rmse(RMSE_pred_UT)
@@ -333,7 +333,7 @@ begin
     pp = plot(train_sizes, first.(collect(values(rmse_pred_ut))), ribbon=(last.(collect(values(rmse_pred_ut)))), label="fVB", markershape=:circle, ylabel="RMS", fillalpha=0.3, markersize=4, color=:black, width=2, alpha=0.7)
     plot!(train_sizes, first.(collect(values(rmse_pred_acc))), ribbon=(last.(collect(values(rmse_pred_acc)))), label="cVB", title="prediction", xticks=train_sizes, markershape=:circle, ylabel="RMS", fillalpha=0.2, markersize=4, color=:red, width=3, alpha=0.7)
     plot!(train_sizes, first.(collect(values(rmse_pred_ils))), ribbon=(last.(collect(values(rmse_pred_ils)))), label="ILS", ylims=(0.05, 0.1), xlabel="length of training signal", markershape=:circle, fillalpha=0.2, legend=:topright, size=(600, 300),ylabelfontsize=13, xlabelfontsize=13, legendfontsize=10, markeralpha=0.3, xtickfontsize=10, ytickfontsize=10, markersize=4, color=:purple, width=3, alpha=0.7)
-    savefig(pp, "experiments/results/synthetic/prediction.tikz") 
+    savefig(pp, "experiments/results/synthetic/prediction_rms.tikz") 
 end
 
 # inference results
@@ -384,11 +384,11 @@ begin
     residuals = get_train_errors(pick) #example_res["residuals_fl"]
     noises = example_res["noise_trn"]
     pe = plot(inf_errors[1], ribbon=sqrt.(inf_errors[2]),linestyle=:dash, width=3, label="inferred")
-    plot!(noises[2:err_len+1], width=1.5, label="generated", xlims=xlims, size=(500, 400), ylabelfontsize=13, xlabelfontsize=13, legendfontsize=10, markeralpha=0.4, xtickfontsize=10, ytickfontsize=10, legend=:topright, xlabel="k", ylabel="amplitude", title="")
+    plot!(noises[2:err_len+1], width=1.5, label="generated", xlims=xlims, size=(600, 300), ylabelfontsize=13, xlabelfontsize=13, legendfontsize=10, markeralpha=0.4, xtickfontsize=10, ytickfontsize=10, legend=:topright, xlabel="k", ylabel="amplitude", title="")
     savefig(pe, "experiments/results/synthetic/fVB_errors.tikz")
 
     pe_ = plot(residuals[2:end], linestyle=:dot, width=3, label="estimated")
-    plot!(noises[1:end], width=1.5, label="generated", xlims=xlims, size=(500, 400), ylabelfontsize=13, xlabelfontsize=13, legendfontsize=10, markeralpha=0.4, xtickfontsize=10, ytickfontsize=10, legend=:topright, xlabel="k", ylabel="amplitude", title="",)
+    plot!(noises[1:end], width=1.5, label="generated", xlims=xlims, size=(600, 300), ylabelfontsize=13, xlabelfontsize=13, legendfontsize=10, markeralpha=0.4, xtickfontsize=10, ytickfontsize=10, legend=:topright, xlabel="k", ylabel="amplitude", title="",)
     savefig(pe_, "experiments/results/synthetic/cVB_errors.tikz")
 end
 
