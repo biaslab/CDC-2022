@@ -18,7 +18,7 @@ push!(PGFPlotsX.CUSTOM_PREAMBLE, raw"\usepgfplotslibrary{fillbetween}");
 # We create a bunch of experiments with `dict_list` function from DrWatson.jl package
 # This creates a list of parameters for each experiment, we use `@onlyif` to restrict some parameters being dependant on others
 
-train_sizes =  [100, 200, 500, 1000]
+train_sizes =  [100, 200, 400, 800]
 n_sim = 100
 
 experiments = dict_list(Dict(
