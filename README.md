@@ -61,8 +61,9 @@ end
 ## Project structure
 
 - `datasets/realizations` - datasets of synthetic data used for experiments
+- `datasets/ils_results` - results of ILS estimator
 - `dump` - (optional), cached results of the experiments in JLD2 files
 - `experiments` - code/scripts for experiments
-- `development` - Jupyter notebooks used during development stage 
-- `experiments/results` - plots + results of ILS estimator
+- `demonstrator` - Jupyter notebooks for the fast exposition of the results.
+- `experiments/results` - plots
 - `src` - reused code, project module, model definitions, and utilities
