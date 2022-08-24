@@ -1,4 +1,4 @@
-export transition, shift, prediction, inference_callback, narmax_meta, symlog
+export transition, shift, prediction, prediction_, inference_callback, narmax_meta, symlog
 
 
 function transition(γ, order)
@@ -22,6 +22,7 @@ end
     AR(ẑ, η, τ) -> ARMeta(artype, order, stype)
 end
 
+# 1-step ahead predictions
 function prediction(h_prior, w_mle, η_posterior, τ_posterior; full_order, meta)
     h_out = MvNormalMeanPrecision(mean(h_prior), precision(h_prior))
     ϕ_out = @call_rule NonlinearNode(:out, Marginalisation) (m_in=h_out, meta=meta)
@@ -33,6 +34,17 @@ function prediction(h_prior, w_mle, η_posterior, τ_posterior; full_order, meta
     @call_rule typeof(+)(:out, Marginalisation) (m_in1=dot_out, m_in2=e_out)  
 end
 
+# simulations prediction
+function prediction_(h_prior, y_posterior, w_mle, η_posterior, τ_posterior; full_order, meta)
+    h_out = MvNormalMeanPrecision(mean(h_prior), precision(h_prior))
+    ϕ_out = @call_rule NonlinearNode(:out, Marginalisation) (m_h=h_out, m_y=y_posterior, meta=meta)
+    ar_out = @call_rule AR(:y, Marginalisation) (m_x=ϕ_out, q_θ=η_posterior, q_γ=τ_posterior, meta=ARMeta(Multivariate, full_order, ARsafe()))
+    c = zeros(full_order); c[1] = 1.0
+    dot_out = @call_rule typeof(dot)(:out, Marginalisation) (m_in1=PointMass(c), m_in2=ar_out, meta=ReactiveMP.TinyCorrection())
+
+    e_out = @call_rule NormalMeanPrecision(:out, Marginalisation) (m_μ=PointMass(0.0), m_τ=PointMass(w_mle))
+    @call_rule typeof(+)(:out, Marginalisation) (m_in1=dot_out, m_in2=e_out)  
+end
 
 function inference_callback(h_prior, η_prior, τ_prior, w_prior, Y, X, U, delay_e, full_order, ϕ, approximation)
     

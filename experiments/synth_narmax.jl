@@ -155,30 +155,28 @@ function run_experiment(experiment_params)
     
     # simulation
     println("Simulation started")
-    h_prior = h[end].data
+
+    h_prior = MvNormalMeanPrecision(zeros(delay_e), diageye(delay_e))#h[end].data
     w_prior = w.data
     τ_prior = τ.data
-    η_prior = η.data
+    η_prior = η[end].data
 
     simulated_X = [X_test[1]]
-    simulated_Y = [Y_test[1]]
-    simulated_Y_cov = [0.0]
-    simulated_error = Vector{Any}([h[end]])
+    simulated_Y = [NormalMeanPrecision(Y_test[1], 1e4) for _ in 1:delay_y]
+    simulated_error = Vector{Any}([h_prior])
 
     ProgressMeter.@showprogress for i in 1:length(Y_test)
-
-        push!(simulated_X, [simulated_Y[i]; simulated_X[i][1:delay_y-1]])
-    
-        pred_sim = prediction(h_prior, mean(w_prior), η_prior, τ_prior, full_order=full_order, meta=NonlinearMeta(approximation, ϕ_, simulated_X[end], U_test[i]))
-    
-        push!(simulated_Y, mean(pred_sim))
-        push!(simulated_Y_cov, var(pred_sim))
+        
+        push!(simulated_X, [mean(simulated_Y[i]); simulated_X[i][1:delay_y-1]])
+        msg_y = MvNormalMeanPrecision(mean.(simulated_Y[end-delay_y+1:end]), Diagonal(var.(simulated_Y[end-delay_y+1:end])))
+        pred_sim = prediction_(h_prior, msg_y, mean(w_prior), η_prior, τ_prior, full_order=full_order, meta=NonlinearMeta(UT(), phi_, X_test[i], U_test[i]))
+        push!(simulated_Y, pred_sim)
         push!(simulated_error, h_prior)
         
 
     end
 
-    RMSE_sim = sqrt(mean((simulated_Y[2:end] .- Y_test).^2))
+    RMSE_sim = sqrt(mean((simulated_Y[delay_y+1:end] .- Y_test).^2))
     
     priors_fl = Dict("θ" => (zeros(full_order,), Matrix{Float64}(I,full_order,full_order)), 
                      "τ" => (1.0, 1.0))

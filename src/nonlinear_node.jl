@@ -161,3 +161,28 @@ end
     (m_bw_in1, V_bw_in1) = smoothRTSMessage(m_tilde, V_tilde, C_tilde, m_fw_in1, V_fw_in1, m_bw_out, V_bw_out)
     return MvNormalMeanCovariance(m_bw_in1, V_bw_in1)
 end
+    
+    
+@rule NonlinearNode(:out, Marginalisation) (m_h::NormalDistributionsFamily, m_y::NormalDistributionsFamily, meta::NonlinearMeta{UT}) = begin
+    s_len = length(mean(m_h))
+    u_len = length(meta.us)
+    y_len = length(meta.ysprev)
+    
+    if y_len != size(m_y)[1]
+        error("size mismatch")
+    end
+    
+    (m_fw_h, V_fw_h) = mean_cov(m_h)
+    (m_fw_y, V_fw_y) = mean_cov(m_y)
+        
+    m_xys = [meta.us; m_fw_y; m_fw_h]
+    
+    def_fn(x) = meta.fn(x[1:u_len], x[u_len+1:u_len+y_len], x[u_len+y_len+1:u_len+y_len+s_len]) 
+    
+    Vxys = diageye(length(m_xys))*1e-4
+    Vxys[u_len+1:u_len+y_len, u_len+1:u_len+y_len] = V_fw_y
+    Vxys[end-s_len+1:end,end-s_len+1:end] = V_fw_h
+
+    (m_tilde, V_tilde, _) = unscentedStatistics(m_xys, Vxys, def_fn; alpha=default_alpha)
+    return MvNormalMeanCovariance(m_tilde,V_tilde)
+end
