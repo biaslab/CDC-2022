@@ -38,7 +38,7 @@ function run_experiment(experiment_params)
     @unpack n_train, n_test, delay, poly_order, iterations, seed, approximation = experiment_params
 
     delay_u, delay_y, delay_e = fill(delay, 3)
-    order_u = delay_u + 1 # u_k, u_{k-1}, u_{k-2}
+    order_u = delay_u + 1
     
     options = Dict("na"=>delay_y, "nb"=>delay_u, "ne"=>delay_e, "nd"=>poly_order, "dc"=>false, "crossTerms"=>true, "noiseCrossTerms"=>false)
 
@@ -156,10 +156,10 @@ function run_experiment(experiment_params)
     # simulation
     println("Simulation started")
 
-    h_prior = MvNormalMeanPrecision(zeros(delay_e), diageye(delay_e))#h[end].data
+    h_prior = MvNormalMeanPrecision(zeros(delay_e), diageye(delay_e))
     w_prior = w.data
     τ_prior = τ.data
-    η_prior = η[end].data
+    η_prior = η.data
 
     simulated_X = [X_test[1]]
     simulated_Y = [NormalMeanPrecision(Y_test[1], 1e4) for _ in 1:delay_y]
@@ -169,14 +169,13 @@ function run_experiment(experiment_params)
         
         push!(simulated_X, [mean(simulated_Y[i]); simulated_X[i][1:delay_y-1]])
         msg_y = MvNormalMeanPrecision(mean.(simulated_Y[end-delay_y+1:end]), Diagonal(var.(simulated_Y[end-delay_y+1:end])))
-        pred_sim = prediction_(h_prior, msg_y, mean(w_prior), η_prior, τ_prior, full_order=full_order, meta=NonlinearMeta(UT(), phi_, X_test[i], U_test[i]))
+        pred_sim = prediction_(h_prior, msg_y, mean(w_prior), η_prior, τ_prior, full_order=full_order, meta=NonlinearMeta(UT(), ϕ_, X_test[i], U_test[i]))
         push!(simulated_Y, pred_sim)
         push!(simulated_error, h_prior)
         
 
     end
-
-    RMSE_sim = sqrt(mean((simulated_Y[delay_y+1:end] .- Y_test).^2))
+    RMSE_sim = sqrt(mean((mean.(simulated_Y[delay_y+1:end]) .- Y_test).^2))
     
     priors_fl = Dict("θ" => (zeros(full_order,), Matrix{Float64}(I,full_order,full_order)), 
                      "τ" => (1.0, 1.0))
@@ -187,7 +186,7 @@ function run_experiment(experiment_params)
     rms_sim_fl, rms_pred_fl, sim_fl, pred_fl, coefs_fl, residuals_fl = ForneyNarmax.experiment_FEM(input_trn[1:n_train], output_trn[1:n_train], input_tst[1:n_test], output_tst[1:n_test], ϕ_fl, priors_fl, M1=delay_u, M2=delay_y, M3=delay_e, N=full_order, num_iters=20, computeFE=false)
 
     # Specify which information should be saved in JLD2 file
-    return @strdict experiment_params result_inf η_true γ_true input_trn output_trn noise_trn input_tst output_tst noise_tst RMSE_pred RMSE_sim coefs_fl rms_sim_fl rms_pred_fl sim_fl pred_fl residuals_fl predictions simulated_Y simulated_Y_cov
+    return @strdict experiment_params result_inf η_true γ_true input_trn output_trn noise_trn input_tst output_tst noise_tst RMSE_pred RMSE_sim coefs_fl rms_sim_fl rms_pred_fl sim_fl pred_fl residuals_fl predictions simulated_Y
 end
 
 
@@ -197,7 +196,7 @@ results = map(experiments) do experiment
     # Types which should be used for cache file name
     save_types  = (String, Real, ET, UT)
     try
-        result, _ = produce_or_load(cache_path, experiment, allowedtypes = save_types) do params
+        result, _ = produce_or_load(cache_path, experiment, allowedtypes = save_types, force=true) do params
             run_experiment(params)
         end
         # generate_plots(result, "tikz")
@@ -205,8 +204,10 @@ results = map(experiments) do experiment
 
         return result
     catch error
-        @warn error
+        @error error
     end
+
+    return result
 end
 
 
