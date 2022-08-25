@@ -263,10 +263,9 @@ begin
 
     # fill up results from MATLAB
     for seed in 1:n_sim
-        sim = SortedDict(train_sizes .=> matread("experiments/results/results-NARMAX_ILS_stde0.05_pol3_delays4_D22_degree3_r$seed.mat")["RMS_sim"]')
-        pred = SortedDict(train_sizes .=> matread("experiments/results/results-NARMAX_ILS_stde0.05_pol3_delays4_D22_degree3_r$seed.mat")["RMS_prd"]')
+        sim = SortedDict(train_sizes .=> matread("datasets/verification/ils_results/results-NARMAX_ILS_stde0.05_pol3_delays4_D22_degree3_r$seed.mat")["RMS_sim"]')
+        pred = SortedDict(train_sizes .=> matread("datasets/verification/ils_results/results-NARMAX_ILS_stde0.05_pol3_delays4_D22_degree3_r$seed.mat")["RMS_prd"]')
         for key in keys(sim)
-            @show key
             push!(RMSE_pred_ILS[key], pred[key])
             push!(RMSE_sim_ILS[key], sim[key])
         end
