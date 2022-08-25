@@ -374,18 +374,18 @@ function get_train_errors(pick, n_train=100, n_test=100)
     return residuals_fl
 end
 begin
-    xlims = (0, 100)
-    pick = 11
+    xlims = (100, 150)
+    pick = 69
     example_res = results[pick]
     inf_errors = mean.(example_res["result_inf"].posteriors[:e]), var.(example_res["result_inf"].posteriors[:e])
     err_len = length(inf_errors[1])
     residuals = get_train_errors(pick) #example_res["residuals_fl"]
     noises = example_res["noise_trn"]
     pe = plot(inf_errors[1], ribbon=sqrt.(inf_errors[2]),linestyle=:dash, width=3, label="inferred")
-    plot!(noises[2:err_len+1], width=1.5, label="generated", xlims=xlims, size=(600, 300), ylabelfontsize=13, xlabelfontsize=13, legendfontsize=10, markeralpha=0.4, xtickfontsize=10, ytickfontsize=10, legend=:topright, xlabel="k", ylabel="amplitude", title="")
+    plot!(noises[2:err_len+1], width=1.5, label="generated", xlims=xlims, size=(400, 300), ylabelfontsize=13, xlabelfontsize=13, legendfontsize=10, markeralpha=0.4, xtickfontsize=10, ytickfontsize=10, legend=:topright, xlabel="k", ylabel="amplitude", title="")
     savefig(pe, "experiments/results/synthetic/fVB_errors.tikz")
 
     pe_ = plot(residuals[2:end], linestyle=:dot, width=3, label="estimated")
-    plot!(noises[1:end], width=1.5, label="generated", xlims=xlims, size=(600, 300), ylabelfontsize=13, xlabelfontsize=13, legendfontsize=10, markeralpha=0.4, xtickfontsize=10, ytickfontsize=10, legend=:topright, xlabel="k", ylabel="amplitude", title="",)
+    plot!(noises[1:end], width=1.5, label="generated", xlims=xlims, size=(400, 300), ylabelfontsize=13, xlabelfontsize=13, legendfontsize=10, markeralpha=0.4, xtickfontsize=10, ytickfontsize=10, legend=:topright, xlabel="k", ylabel="amplitude", title="",)
     savefig(pe_, "experiments/results/synthetic/cVB_errors.tikz")
 end
